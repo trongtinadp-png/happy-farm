@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Mini Happy Farm</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #e8f5e9;
+            margin-top: 50px;
+        }
+        h1 { color: #2e7d32; }
+        #farm {
+            display: grid;
+            grid-template-columns: repeat(3, 120px);
+            gap: 15px;
+            justify-content: center;
+            margin: 20px auto;
+        }
+        .plot {
+            width: 120px;
+            height: 120px;
+            background-color: #8d6e63;
+            border: 4px solid #5d4037;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            user-select: none;
+            transition: 0.2s;
+        }
+        .plot:hover {
+            transform: scale(1.05);
+        }
+        #stats {
+            font-size: 18px;
+            font-weight: bold;
+            color: #388e3c;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🌾 Mini Happy Farm 🌾</h1>
+    <div id="stats">Tiền vàng: <span id="gold">100</span> 🪙</div>
+    <p>Bấm vào ô đất trống để trồng lúa, bấm lần nữa để thu hoạch khi chín!</p>
+
+    <div id="farm">
+        <div class="plot" onclick="handlePlot(0)">Đất trống</div>
+        <div class="plot" onclick="handlePlot(1)">Đất trống</div>
+        <div class="plot" onclick="handlePlot(2)">Đất trống</div>
+    </div>
+
+    <script>
+        let gold = 100;
+        // Trạng thái các ô đất: 0 = Trống, 1 = Đang mọc, 2 = Chín
+        let plots = [
+            { state: 0, timer: null },
+            { state: 0, timer: null },
+            { state: 0, timer: null }
+        ];
+
+        function updateView() {
+            document.getElementById("gold").innerText = gold;
+            let plotElements = document.getElementsByClassName("plot");
+            
+            for (let i = 0; i < plots.length; i++) {
+                if (plots[i].state === 0) {
+                    plotElements[i].innerText = "🌱 Đất trống";
+                    plotElements[i].style.backgroundColor = "#8d6e63";
+                } else if (plots[i].state === 1) {
+                    plotElements[i].innerText = "🌿 Đang lớn...";
+                    plotElements[i].style.backgroundColor = "#c8e6c9";
+                } else if (plots[i].state === 2) {
+                    plotElements[i].innerText = "🌾 Thu hoạch!";
+                    plotElements[i].style.backgroundColor = "#fff59d";
+                }
+            }
+        }
+
+        function handlePlot(index) {
+            if (plots[index].state === 0) {
+                // Trồng cây (tốn 5 vàng)
+                if (gold >= 5) {
+                    gold -= 5;
+                    plots[index].state = 1;
+                    updateView();
+
+                    // Sau 4 giây cây sẽ chín
+                    plots[index].timer = setTimeout(() => {
+                        plots[index].state = 2;
+                        updateView();
+                    }, 4000);
+                } else {
+                    alert("Bạn không đủ tiền để mua hạt giống!");
+                }
+            } else if (plots[index].state === 2) {
+                // Thu hoạch (nhận 15 vàng)
+                gold += 15;
+                plots[index].state = 0;
+                clearTimeout(plots[index].timer);
+                updateView();
+            }
+        }
+    </script>
+</body>
+</html>
